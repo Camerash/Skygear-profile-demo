@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public static SwipeRefreshLayout swipeRefreshLayout;
     public static User me;
     public static LinearLayout loginScreen;
+    public boolean firstStartUp = false;
 
     public Runnable getRecords = new Runnable() {
         @Override
@@ -196,6 +197,13 @@ public class MainActivity extends AppCompatActivity {
         if (!Util.isNetworkConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), "No network connected", Toast.LENGTH_SHORT).show();
             finish();
+        }
+
+        if(Util.getData(this, "first_start_up") == null){
+            Util.saveData(this, "first_start_up", "true");
+            firstStartUp = true;
+        } else {
+            firstStartUp = false;
         }
 
         skygear = Container.defaultContainer(this);
@@ -382,5 +390,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        if(firstStartUp){
+            firstStartUp = false;
+            Toast.makeText(getApplicationContext(), "Please set up your personal profile", Toast.LENGTH_LONG).show();
+            getRecordsThread = new Thread(getRecords);
+            Intent intent = new Intent(this, EditProfile.class);
+            startActivity(intent);
+        }
     }
 }
